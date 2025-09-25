@@ -36,12 +36,15 @@ def get_extension(file):
 
 # move the file to its respective extension
 def move_file(file, src_folder, extension):
-	src = os.path.join(src_folder, file)
-	dst_folder = os.path.join(src_folder, extension)
-	dst = os.path.join(dst_folder, file)
+    src = os.path.join(src_folder, file)
+    dst_folder = os.path.join(src_folder, extension)
 
-	shutil.move(src, dst)
-	print(f"moved to {extension}: {file}")
+    # make sure the folder exists
+    os.makedirs(dst_folder, exist_ok=True)
+    dst = os.path.join(dst_folder, file)
+    shutil.move(src, dst)
+	
+    print(f"Moved {file} → {dst_folder}")
 
 # check if a folder exists already
 def is_exists(folder):
