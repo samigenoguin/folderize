@@ -18,7 +18,7 @@ It automatically creates folders (e.g., `PNG`, `TXT`, `PDF`) and moves files int
 Clone the repository and install requirements:
 
 ```bash
-git clone https://github.com/yourusername/folderize.git
+git clone https://github.com/samigenoguin/folderize.git
 cd folderize
 pip install -r requirements.txt
 ```
