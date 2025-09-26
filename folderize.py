@@ -2,20 +2,30 @@ import os
 import shutil
 
 import tkinter as tk
-from tkinter import ttk
 import ttkbootstrap as ttk
 from tkinter import filedialog
 
+from ttkbootstrap.dialogs import Messagebox
+
 # set window
 window = ttk.Window(themename="darkly")
-window.title("File Organizer")
+window.title("Folderize by @samigenoguin")
 window.geometry("420x195")
 window.resizable(False, False)
 
 # setting path
 path_var = tk.StringVar()
 status_var = tk.StringVar()
+error_var = tk.StringVar()
+
 status_var.set("...")
+
+# show error
+def popup_error():
+	Messagebox.show_warning(
+		error_var.get().strip(),
+		"Folderize Exception"
+	)
 
 # browse function
 def browse_folder():
@@ -64,32 +74,34 @@ def get_working_file():
 # main function to run
 def organize():
 	path = path_var.get().strip()
-	folder_exists = is_exists(path)
 
-	# run if exists
-	if folder_exists:
-		files = get_files(path)
-		working_file =  get_working_file()
+	files = get_files(path)
+	working_file =  get_working_file()
 
-		# loop through the folder
-		moved_files = 0
-		for file in files:
-			if os.path.abspath(file) != working_file:
-				extension = get_extension(file)
+	# loop through the folder
+	moved_files = 0
+	for file in files:
+		if os.path.abspath(os.path.join(path, file)) != working_file:
+			extension = get_extension(file)
+			ext_folder = os.path.join(path, extension)
 
-				# create a folder if not exists
-				if not is_exists(extension):
-					create_folder(extension)
+			# create a folder if not exists
+			if not is_exists(extension):
+				create_folder(ext_folder)
 
-				move_file(file, path, extension)
-				moved_files += 1
-				status_var.set(f"Organizing files.. {moved_files}/{len(files)}")
+			move_file(file, path, extension)
+			moved_files += 1
+			status_var.set(f"Organizing files.. {moved_files}/{len(files)}")
 
-		status_var.set(f"Files successfully organized {len(files)} files!")
+	status_var.set(f"Files successfully organized {len(files)} files!")
 
-	# else, error
-	if not folder_exists:
-		status_var.set(f"The system cannot find the path specified")
+# main function + error popup
+def folderize():
+	try:
+		organize()
+	except Exception as e:
+		error_var.set(str(e))
+		popup_error()
 
 # style
 style = ttk.Style()
@@ -111,7 +123,7 @@ status_text.place(x=53, y=100)
 browse_button = ttk.Button(window, text="Browse", command=browse_folder, style="Italic.TButton")
 browse_button.place(x=53, y=135)
 
-main_button = ttk.Button(window, text="Run", command=organize, style="Italic.TButton")
+main_button = ttk.Button(window, text="Run", command=folderize, style="Italic.TButton")
 main_button.place(x=123, y=135)
 
 # run when called
